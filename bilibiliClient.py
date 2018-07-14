@@ -205,6 +205,10 @@ class bilibiliClient():
                 song_name = danmu[4:] if danmu[3] == ' ' else danmu[3:]
                 self.playlistmanager.add_song_by_name(song_name)
 
+            elif danmu[:2] == '点歌' or danmu[:2] == '点播':
+                song_name = danmu[3:] if danmu[2]==' ' else danmu[2:]
+                self.playlistmanager.add_song_by_name(song_name)
+
             elif danmu[:3]== 'del':
                 song_id = danmu[4:] if danmu[3] == ' ' else danmu[3:]
                 try:
