@@ -1,4 +1,4 @@
-# universal 24h live on bilibili (not only on raspberry pi)
+# universal 24h live on bilibili (not only for raspberry pi)
 
 b站直播点歌台（精简版）
 
