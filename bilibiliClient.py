@@ -1,19 +1,14 @@
-#coding:utf-8
+# coding=utf-8
 import asyncio
 import aiohttp
-import xml.dom.minidom
-import random
 import json
 from struct import *
-import json
-import re
-import var_set
 import numpy
 import os
-import post_dm
 import urllib
 import urllib.request
-import json
+import var_set
+from playlistmanager import *
 
 TURN_WELCOME = 1
 TURN_GIFT = 1
@@ -32,6 +27,7 @@ class bilibiliClient():
 
         #self._roomId = input('请输入房间号：')
         self._roomId = int(var_set.roomid)
+        self.playlistmanager = PlaylistManager()
 
     async def connectServer(self):
         print ('正在进入房间。。。。。')
@@ -103,7 +99,7 @@ class bilibiliClient():
                 if num==0 or num==1 or num==2:
                     tmp = await self._reader.read(4)
                     num3, = unpack('!I', tmp)
-                    #print ('房间人数为 %s' % num3)
+                    # print ('房间人数为 %s' % num3)
                     self._UserCount = num3
                     continue
                 elif num==3 or num==4:
@@ -113,7 +109,7 @@ class bilibiliClient():
                         messages = tmp.decode('utf-8')
                     except:
                         continue
-                    self.parseDanMu(messages)
+                    self.parseMessages(messages)
                     continue
                 elif num==5 or num==6 or num==7:
                     tmp = await self._reader.read(num2)
@@ -124,7 +120,7 @@ class bilibiliClient():
                     else:
                         continue
 
-    def parseDanMu(self, messages):
+    def parseMessages(self, messages):
         try:
             dic = json.loads(messages)
         except: # 有些情况会 jsondecode 失败，未细究，可能平台导致
@@ -147,7 +143,8 @@ class bilibiliClient():
             #     commentUser = 'VIP ' + commentUser
             try:
                 print (commentUser + ' 说: ' + commentText)
-                post_dm.pick_msg(commentText,commentUser)
+                self.parseDanMu(commentText)
+                #post_dm.pick_msg(commentText,commentUser)
             except:
                 pass
             return
@@ -179,7 +176,7 @@ class bilibiliClient():
                     numpy.save('users/'+GiftUser+'.npy', gift_count)
                 except:
                     print('create error')
-                post_dm.send_dm_long('感谢'+GiftUser+'送的'+str(GiftNum)+'个'+GiftName+'！')
+                #post_dm.send_dm_long('感谢'+GiftUser+'送的'+str(GiftNum)+'个'+GiftName+'！')
             except:
                 pass
             return
@@ -187,30 +184,59 @@ class bilibiliClient():
             commentUser = dic['data']['uname']
             try:
                 print ('欢迎 ' + commentUser + ' 进入房间。。。。')
-                post_dm.send_dm_long('欢迎' + commentUser + '进入直播间！')
+                #post_dm.send_dm_long('欢迎' + commentUser + '进入直播间！')
             except:
                 pass
             return
         return
 
+    def parseDanMu(self, danmu):
+        if len(danmu)>=5:
+            if danmu[:2] == 'id':
+                song_id = danmu[3:] if danmu[2]==' ' else danmu[2:]
+                try:
+                    song_id = int(song_id)
+                except:
+                    print('id type error.')
+                    return
+                self.playlistmanager.add_song_by_id(song_id)
 
-try:
-    danmuji = bilibiliClient()
-    tasks = [
-                danmuji.connectServer() ,
-                danmuji.HeartbeatLoop()
-            ]
-    loop = asyncio.get_event_loop()
+            elif danmu[:3]=='add':
+                song_name = danmu[4:] if danmu[3] == ' ' else danmu[3:]
+                self.playlistmanager.add_song_by_name(song_name)
+
+            elif danmu[:3]== 'del':
+                song_id = danmu[4:] if danmu[3] == ' ' else danmu[3:]
+                try:
+                    song_id = int(song_id)
+                except:
+                    print('id type error.')
+                    return
+                self.playlistmanager.del_song_by_id(song_id)
+
+    def closePlayer(self):
+        self.playlistmanager.player.terminate()
+
+
+
+if __name__ == '__main__':
     try:
-        loop.run_until_complete(asyncio.wait(tasks))
-    except KeyboardInterrupt:
-        danmuji.connected = False
-        for task in asyncio.Task.all_tasks():
-            task.cancel()
-        loop.run_forever()
-    loop.close()
-    os.system("screen -dm python3 "+var_set.path+"/bilibiliClient.py")#自动重启
-except Exception as e:  #防炸
-    print('shit')
-    print(e)
-    os.system("screen -dm python3 "+var_set.path+"/bilibiliClient.py")#自动重启
+        danmuji = bilibiliClient()
+        tasks = [
+                    danmuji.connectServer() ,
+                    danmuji.HeartbeatLoop()
+                ]
+        loop = asyncio.get_event_loop()
+        try:
+            loop.run_until_complete(asyncio.wait(tasks))
+        except KeyboardInterrupt:
+            danmuji.connected = False
+            for task in asyncio.Task.all_tasks():
+                task.cancel()
+            loop.run_forever()
+        loop.close()
+       # os.system("screen -dm python3 "+var_set.path+"/bilibiliClient.py")#自动重启
+    except Exception as e:  #防炸
+        print('shit')
+        print(e)
+       # os.system("screen -dm python3 "+var_set.path+"/bilibiliClient.py")#自动重启
