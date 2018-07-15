@@ -48,43 +48,43 @@ demo: [http://live.bilibili.com/3448847](http://live.bilibili.com/3448847)
 sudo apt-get install ffmpeg
 ```
 
-若不成功，则可以尝试编译安装：
-
-```Bash
-sudo apt-get -y install autoconf automake build-essential libass-dev libfreetype6-dev libtheora-dev libtool libvorbis-dev pkg-config texinfo wget zlib1g-dev
-```
-
-安装x264编码器（时间较长）：
-
-```Bash
-git clone git://git.videolan.org/x264
-cd x264
-./configure --host=arm-unknown-linux-gnueabi --enable-static --disable-opencl
-make
-sudo make install
-cd ..
-rm -rf x264
-```
-
-libmp3lame & libopus & libvpx：
-
-```Bash
-sudo apt-get install libmp3lame-dev libopus-dev libvpx-dev
-```
-
-编译并安装ffmpeg（时间较长）：
-
-```Bash
-wget http://ffmpeg.org/releases/ffmpeg-3.3.2.tar.bz2
-tar jxvf ffmpeg-3.3.2.tar.bz2
-cd ffmpeg-3.3.2
-sudo ./configure --arch=armel --target-os=linux --enable-gpl --enable-libx264 --enable-nonfree --enable-libass --enable-libfreetype  --enable-omx --enable-omx-rpi --enable-encoder=h264_omx --enable-mmal --enable-hwaccel=h264_mmal --enable-decoder=h264_mmal
-make -j4
-sudo make install
-cd ..
-```
-
-（以上有一部分代码参考自[ffmpeg源码编译安装（Compile ffmpeg with source）  Part 2 ： 扩展安装 - 人脑之战 - 博客园](http://www.cnblogs.com/yaoz/p/6944942.html)）
+>若不成功，则可以尝试编译安装：
+>
+>```Bash
+>sudo apt-get -y install autoconf automake build-essential libass-dev libfreetype6-dev libtheora-dev libtool libvorbis-dev pkg-config texinfo wget zlib1g-dev
+>```
+>
+>安装x264编码器（时间较长）：
+>
+>```Bash
+>git clone git://git.videolan.org/x264
+>cd x264
+>./configure --host=arm-unknown-linux-gnueabi --enable-static --disable-opencl
+>make
+>sudo make install
+>cd ..
+>rm -rf x264
+>```
+>
+>libmp3lame & libopus & libvpx：
+>
+>```Bash
+>sudo apt-get install libmp3lame-dev libopus-dev libvpx-dev
+>```
+>
+>编译并安装ffmpeg（时间较长）：
+>
+>```Bash
+>wget http://ffmpeg.org/releases/ffmpeg-3.3.2.tar.bz2
+>tar jxvf ffmpeg-3.3.2.tar.bz2
+>cd ffmpeg-3.3.2
+>sudo ./configure --arch=armel --target-os=linux --enable-gpl --enable-libx264 --enable-nonfree --enable-libass --enable-libfreetype  --enable-omx --enable-omx-rpi --enable-encoder=h264_omx --enable-mmal --enable-hwaccel=h264_mmal --enable-decoder=h264_mmal
+>make -j4
+>sudo make install
+>cd ..
+>```
+>
+>（以上有一部分代码参考自[ffmpeg源码编译安装（Compile ffmpeg with source）  Part 2 ： 扩展安装 - 人脑之战 - 博客园](http://www.cnblogs.com/yaoz/p/6944942.html)）
 
 安装python3的mutagen & aiohttp库：
 
