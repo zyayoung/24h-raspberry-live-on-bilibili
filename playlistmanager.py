@@ -68,6 +68,7 @@ class PlaylistManager:
             if song_id in self.play_list_ids:
                 for file in glob.glob(os.path.join(self.song_path, '%010d' % song_id + '*')):
                     self.q_new_song.put(os.path.split(file)[1])
+                return
 
             # get song url
             info = json.loads(urlopen('https://api.imjad.cn/cloudmusic/?id=' + str(song_id) + '&br=320000').read().decode('utf-8'))
