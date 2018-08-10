@@ -160,14 +160,16 @@ class PlaylistManager:
 
                 audio = MP3(mp3_file_path)
                 seconds = audio.info.length  # 获取时长
-                print('Next: ', nxt_song_filename[10:-4])
+                # print('Next: ', nxt_song_filename[10:-4])
 
                 cmd = 'ffmpeg -threads 0 -re -loop 1 -r 2 -t ' + str(int(seconds)) + ' -f image2' \
                       + ' -i "' + img_file_path + '"' \
                       + ' -i "' + mp3_file_path + '"' \
-                      + ' -acodec copy -c:v h264 -crf 28 -f flv '\
-                      + '"' + var_set.rtmp+var_set.live_code + '"'
-                print(cmd)
+                      + ' -acodec copy -c:v h264_omx -crf 28 -f flv ' \
+                      + '"' + var_set.rtmp+var_set.live_code + '"' \
+                      + ' > /dev/null 2>&1'
+
+                # print(cmd)
 
                 # start streaming
                 os.system(cmd)

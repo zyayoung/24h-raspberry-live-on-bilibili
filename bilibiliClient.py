@@ -222,12 +222,11 @@ class bilibiliClient():
         self.playlistmanager.player.terminate()
 
 
-
 if __name__ == '__main__':
     try:
         danmuji = bilibiliClient()
         tasks = [
-                    danmuji.connectServer() ,
+                    danmuji.connectServer(),
                     danmuji.HeartbeatLoop()
                 ]
         loop = asyncio.get_event_loop()
